@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日语日期完全掌握 | Japanese Date Master</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card-gradient {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .sakura-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50 C20 50 20 20 50 20 C80 20 80 50 50 50' fill='%23ffffff' fill-opacity='0.1'/%3E%3C/svg%3E");
+        }
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        .wave-animation {
+            animation: wave 2s ease-in-out infinite;
+        }
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        .date-card {
+            transition: all 0.3s ease;
+        }
+        .date-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-press:active {
+            transform: scale(0.95);
+        }
+        .tab-active {
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body class="sakura-bg text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="text-4xl">📅</div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">日语日期完全掌握</h1>
+                        <p class="text-sm text-gray-600">Japanese Date Master</p>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="switchTab('learn')" id="tab-learn" class="px-4 py-2 font-medium tab-active transition-colors hover:text-purple-600">
+                        学习模式
+                    </button>
+                    <button onclick="switchTab('quiz')" id="tab-quiz" class="px-4 py-2 font-medium text-gray-500 transition-colors hover:text-purple-600">
+                        测试模式
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Stats Bar -->
+        <div class="bg-white/80 backdrop-blur rounded-2xl shadow-lg p-6 mb-8 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-4">
+                <div class="bg-purple-100 p-3 rounded-full">
+                    <span class="text-2xl">🎯</span>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">掌握进度</p>
+                    <p class="text-2xl font-bold text-purple-600" id="progress-text">0/366</p>
+                </div>
+            </div>
+            <div class="flex-1 max-w-md mx-4">
+                <div class="bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div id="progress-bar" class="progress-bar bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-pink-100 p-3 rounded-full">
+                    <span class="text-2xl">🔥</span>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">连续正确</p>
+                    <p class="text-2xl font-bold text-pink-600" id="streak-count">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Mode -->
+        <div id="learn-section" class="fade-in">
+            <!-- Month Filter -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8" id="month-filters">
+                <button onclick="filterMonth('all')" class="month-btn px-4 py-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all bg-purple-600 text-white" data-month="all">
+                    全部
+                </button>
+                <!-- 月份按钮将由 JS 生成 -->
+            </div>
+
+            <!-- Date Grid -->
+            <div id="date-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+
+        <!-- Quiz Mode -->
+        <div id="quiz-section" class="hidden fade-in">
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-white rounded-3xl shadow-2xl p-8 text-center">
+                    <div class="mb-6">
+                        <span class="text-sm text-gray-500 uppercase tracking-wide">请读出这个日期</span>
+                        <div class="mt-4 text-6xl font-bold text-gray-800 font-serif" id="quiz-date">1月1日</div>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <button onclick="speakDate()" class="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all btn-press flex items-center justify-center space-x-2">
+                            <span>🔊</span>
+                            <span>播放读音</span>
+                        </button>
+                        <button onclick="showAnswer()" class="w-full py-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all btn-press">
+                            显示答案
+                        </button>
+                    </div>
+
+                    <div id="answer-section" class="hidden bg-gray-50 rounded-2xl p-6 space-y-4">
+                        <div class="text-3xl font-bold text-purple-600" id="answer-kana">いちがつ ついたち</div>
+                        <div class="text-xl text-gray-600" id="answer-romaji">Ichigatsu Tsuitachi</div>
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <button onclick="markCorrect()" class="px-6 py-3 bg-green-500 text-white rounded-full font-bold hover:bg-green-600 transition-colors btn-press">
+                                ✓ 掌握了
+                            </button>
+                            <button onclick="markWrong()" class="px-6 py-3 bg-red-500 text-white rounded-full font-bold hover:bg-red-600 transition-colors btn-press">
+                                ✗ 再学习
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-between items-center text-sm text-gray-500">
+                        <span id="quiz-stats">题目: 1/10</span>
+                        <button onclick="generateQuiz()" class="text-purple-600 hover:text-purple-800 font-medium">
+                            下一题 →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Special Notes -->
+                <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                    <h3 class="font-bold text-yellow-800 mb-2">📌 特殊读法提醒</h3>
+                    <ul class="text-sm text-yellow-700 space-y-1">
+                        <li>• 1日：ついたち (Tsuitachi) 或 いちにち</li>
+                        <li>• 2-10日：使用"日"的训读（ふつか、みっか...）</li>
+                        <li>• 14日：じゅうよっか (Juuyokka)</li>
+                        <li>• 20日：はつか (Hatsuka)</li>
+                        <li>• 24日：にじゅうよっか (Nijuuyokka)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Japanese Date Data
+        const monthData = {
+            1: { kanji: '一月', kana: 'いちがつ', romaji: 'Ichigatsu' },
+            2: { kanji: '二月', kana: 'にがつ', romaji: 'Nigatsu' },
+            3: { kanji: '三月', kana: 'さんがつ', romaji: 'Sangatsu' },
+            4: { kanji: '四月', kana: 'しがつ', romaji: 'Shigatsu' },
+            5: { kanji: '五月', kana: 'ごがつ', romaji: 'Gogatsu' },
+            6: { kanji: '六月', kana: 'ろくがつ', romaji: 'Rokugatsu' },
+            7: { kanji: '七月', kana: 'しちがつ', romaji: 'Shichigatsu' },
+            8: { kanji: '八月', kana: 'はちがつ', romaji: 'Hachigatsu' },
+            9: { kanji: '九月', kana: 'くがつ', romaji: 'Kugatsu' },
+            10: { kanji: '十月', kana: 'じゅうがつ', romaji: 'Juugatsu' },
+            11: { kanji: '十一月', kana: 'じゅういちがつ', romaji: 'Juuichigatsu' },
+            12: { kanji: '十二月', kana: 'じゅうにがつ', romaji: 'Juunigatsu' }
+        };
+
+        const dayData = {
+            1: { kanji: '一日', kana: 'ついたち', romaji: 'Tsuitachi', special: true },
+            2: { kanji: '二日', kana: 'ふつか', romaji: 'Futsuka', special: true },
+            3: { kanji: '三日', kana: 'みっか', romaji: 'Mikka', special: true },
+            4: { kanji: '四日', kana: 'よっか', romaji: 'Yokka', special: true },
+            5: { kanji: '五日', kana: 'いつか', romaji: 'Itsuka', special: true },
+            6: { kanji: '六日', kana: 'むいか', romaji: 'Muika', special: true },
+            7: { kanji: '七日', kana: 'なのか', romaji: 'Nanoka', special: true },
+            8: { kanji: '八日', kana: 'ようか', romaji: 'Youka', special: true },
+            9: { kanji: '九日', kana: 'ここのか', romaji: 'Kokonoka', special: true },
+            10: { kanji: '十日', kana: 'とおか', romaji: 'Tooka', special: true },
+            11: { kanji: '十一日', kana: 'じゅういちにち', romaji: 'Juuichinichi' },
+            12: { kanji: '十二日', kana: 'じゅうににち', romaji: 'Juuninichi' },
+            13: { kanji: '十三日', kana: 'じゅうさんにち', romaji: 'Juusannichi' },
+            14: { kanji: '十四日', kana: 'じゅうよっか', romaji: 'Juuyokka', special: true },
+            15: { kanji: '十五日', kana: 'じゅうごにち', romaji: 'Juugonichi' },
+            16: { kanji: '十六日', kana: 'じゅうろくにち', romaji: 'Juurokunichi' },
+            17: { kanji: '十七日', kana: 'じゅうしちにち', romaji: 'Juushichinichi' },
+            18: { kanji: '十八日', kana: 'じゅうはちにち', romaji: 'Juuhatnichi' },
+            19: { kanji: '十九日', kana: 'じゅうくにち', romaji: 'Juukunichi' },
+            20: { kanji: '二十日', kana: 'はつか', romaji: 'Hatsuka', special: true },
+            21: { kanji: '二十一日', kana: 'にじゅういちにち', romaji: 'Nijuuichinichi' },
+            22: { kanji: '二十二日', kana: 'にじゅうににち', romaji: 'Nijuuninichi' },
+            23: { kanji: '二十三日', kana: 'にじゅうさんにち', romaji: 'Nijuusannichi' },
+            24: { kanji: '二十四日', kana: 'にじゅうよっか', romaji: 'Nijuuyokka', special: true },
+            25: { kanji: '二十五日', kana: 'にじゅうごにち', romaji: 'Nijuugonichi' },
+            26: { kanji: '二十六日', kana: 'にじゅうろくにち', romaji: 'Nijuurokunichi' },
+            27: { kanji: '二十七日', kana: 'にじゅうしちにち', romaji: 'Nijuushichinichi' },
+            28: { kanji: '二十八日', kana: 'にじゅうはちにち', romaji: 'Nijuuhachinichi' },
+            29: { kanji: '二十九日', kana: 'にじゅうくにち', romaji: 'Nijuukunichi' },
+            30: { kanji: '三十日', kana: 'さんじゅうにち', romaji: 'Sanjuunichi' },
+            31: { kanji: '三十一日', kana: 'さんじゅういちにち', romaji: 'Sanjuuichinichi' }
+        };
+
+        // State
+        let learnedDates = new Set();
+        let currentMonth = 'all';
+        let currentQuiz = null;
+        let streak = 0;
+        let quizCount = 0;
+        let correctCount = 0;
+
+        // Initialize
+        function init() {
+            generateMonthFilters();
+            renderGrid();
+            generateQuiz();
+            updateProgress();
+        }
+
+        // Generate Month Filter Buttons
+        function generateMonthFilters() {
+            const container = document.getElementById('month-filters');
+            for (let i = 1; i <= 12; i++) {
+                const btn = document.createElement('button');
+                btn.onclick = () => filterMonth(i);
+                btn.className = 'month-btn px-4 py-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all text-gray-700';
+                btn.dataset.month = i;
+                btn.textContent = i + '月';
+                container.appendChild(btn);
+            }
+        }
+
+        // Generate all dates
+        function getAllDates() {
+            const dates = [];
+            for (let m = 1; m <= 12; m++) {
+                const daysInMonth = new Date(2024, m, 0).getDate();
+                for (let d = 1; d <= daysInMonth; d++) {
+                    dates.push({ month: m, day: d });
+                }
+            }
+            return dates;
+        }
+
+        // Render Date Grid
+        function renderGrid() {
+            const grid = document.getElementById('date-grid');
+            grid.innerHTML = '';
+            
+            const dates = getAllDates().filter(date => 
+                currentMonth === 'all' || date.month === parseInt(currentMonth)
+            );
+
+            dates.forEach(({ month, day }) => {
+                const mData = monthData[month];
+                const dData = dayData[day];
+                const dateKey = `${month}-${day}`;
+                const isLearned = learnedDates.has(dateKey);
+
+                const card = document.createElement('div');
+                card.className = `date-card flip-card bg-white rounded-2xl shadow-md cursor-pointer h-40 ${isLearned ? 'ring-2 ring-green-400' : ''}`;
+                card.onclick = () => toggleCard(card);
+                
+                card.innerHTML = `
+                    <div class="flip-card-inner relative w-full h-full">
+                        <div class="flip-card-front absolute w-full h-full flex flex-col items-center justify-center p-4 rounded-2xl card-gradient">
+                            <div class="text-3xl font-bold text-gray-800 mb-1">${month}月${day}日</div>
+                            <div class="text-sm text-gray-500">点击翻转</div>
+                            ${isLearned ? '<div class="absolute top-2 right-2 text-green-500">✓</div>' : ''}
+                        </div>
+                        <div class="flip-card-back absolute w-full h-full flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+                            <div class="text-lg font-bold mb-1">${mData.kanji}${dData.kanji}</div>
+                            <div class="text-2xl font-bold mb-1">${mData.kana}<br>${dData.kana}</div>
+                            <div class="text-xs opacity-90">${mData.romaji} ${dData.romaji}</div>
+                            ${dData.special ? '<div class="absolute top-2 right-2 text-yellow-300 text-xs">特殊</div>' : ''}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Toggle Card Flip
+        function toggleCard(card) {
+            card.classList.toggle('flipped');
+        }
+
+        // Filter by Month
+        function filterMonth(month) {
+            currentMonth = month;
+            
+            // Update button styles
+            document.querySelectorAll('.month-btn').forEach(btn => {
+                const btnMonth = btn.dataset.month;
+                if (btnMonth === String(month) || (month === 'all' && btnMonth === 'all')) {
+                    btn.classList.remove('bg-white', 'text-gray-700');
+                    btn.classList.add('bg-purple-600', 'text-white');
+                } else {
+                    btn.classList.add('bg-white', 'text-gray-700');
+                    btn.classList.remove('bg-purple-600', 'text-white');
+                }
+            });
+
+            renderGrid();
+        }
+
+        // Switch Tab
+        function switchTab(tab) {
+            if (tab === 'learn') {
+                document.getElementById('learn-section').classList.remove('hidden');
+                document.getElementById('quiz-section').classList.add('hidden');
+                document.getElementById('tab-learn').classList.add('tab-active');
+                document.getElementById('tab-quiz').classList.remove('tab-active');
+            } else {
+                document.getElementById('learn-section').classList.add('hidden');
+                document.getElementById('quiz-section').classList.remove('hidden');
+                document.getElementById('tab-quiz').classList.add('tab-active');
+                document.getElementById('tab-learn').classList.remove('tab-active');
+                generateQuiz();
+            }
+        }
+
+        // Generate Quiz Question
+        function generateQuiz() {
+            const month = Math.floor(Math.random() * 12) + 1;
+            const daysInMonth = new Date(2024, month, 0).getDate();
+            const day = Math.floor(Math.random() * daysInMonth) + 1;
+            
+            currentQuiz = { month, day };
+            
+            document.getElementById('quiz-date').textContent = `${month}月${day}日`;
+            document.getElementById('answer-section').classList.add('hidden');
+            document.getElementById('quiz-stats').textContent = `题目: ${++quizCount}`;
+            
+            // Update answer
+            const mData = monthData[month];
+            const dData = dayData[day];
+            document.getElementById('answer-kana').textContent = `${mData.kana} ${dData.kana}`;
+            document.getElementById('answer-romaji').textContent = `${mData.romaji} ${dData.romaji}`;
+        }
+
+        // Show Answer
+        function showAnswer() {
+            document.getElementById('answer-section').classList.remove('hidden');
+        }
+
+        // Speak Date (using Web Speech API)
+        function speakDate() {
+            const utterance = new SpeechSynthesisUtterance();
+            const mData = monthData[currentQuiz.month];
+            const dData = dayData[currentQuiz.day];
+            utterance.text = `${mData.kana} ${dData.kana}`;
+            utterance.lang = 'ja-JP';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+        }
+
+        // Mark Correct
+        function markCorrect() {
+            const dateKey = `${currentQuiz.month}-${currentQuiz.day}`;
+            learnedDates.add(dateKey);
+            streak++;
+            correctCount++;
+            updateProgress();
+            generateQuiz();
+            
+            // Visual feedback
+            const btn = event.target;
+            btn.textContent = '✓ 已记录';
+            setTimeout(() => btn.textContent = '✓ 掌握了', 1000);
+        }
+
+        // Mark Wrong
+        function markWrong() {
+            streak = 0;
+            document.getElementById('streak-count').textContent = streak;
+            generateQuiz();
+        }
+
+        // Update Progress
+        function updateProgress() {
+            const total = 366; // 2024 is leap year
+            const learned = learnedDates.size;
+            const percentage = (learned / total) * 100;
+            
+            document.getElementById('progress-text').textContent = `${learned}/${total}`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('streak-count').textContent = streak;
+        }
+
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>
